@@ -1,0 +1,71 @@
+k8sServiceHost: "{{ api_server_address }}"
+k8sServicePort: "{{ apiserver_port }}"
+
+# -- Install the cilium agent resources.
+agent: true
+
+# -- Agent container name.
+name: cilium
+
+# Increase rate limit when doing L2 announcements
+k8sClientRateLimit:
+  qps: 50
+  burst: 100
+
+# -- Roll out cilium agent pods automatically when configmap is updated.
+rollOutCiliumPods: true
+
+cni:
+  install: true
+  # -- Remove the CNI configuration and binary files on agent shutdown. Enable this
+  # if you're removing Cilium from the cluster. Disable this to prevent the CNI
+  # configuration file from being removed during agent upgrade, which can cause
+  # nodes to go unmanageable.
+  uninstall: false
+
+envoyConfig:
+  enabled: true
+
+# Enable envoy daemonset
+envoy:
+  enabled: true
+
+# Enable Layer 7 network policy.
+l7Proxy: true
+
+gatewayAPI:
+  enabled: true
+
+k8sNetworkPolicy:
+  # -- Enable support for K8s NetworkPolicy
+  enabled: true
+
+endpointRoutes:
+  enabled: true
+
+# -- Configure the kube-proxy replacement in Cilium BPF datapath
+kubeProxyReplacement: true
+
+routingMode: "native"
+autoDirectNodeRoutes: true
+ipv4NativeRoutingCIDR: "10.0.0.0/16"
+requireIPv4PodCIDR: true
+
+bpf:
+  masquerade: true
+  hostLegacyRouting: false
+
+ipam:
+  mode: "kubernetes"
+
+# -- Enables masquerading of IPv4 traffic leaving the node from endpoints.
+enableIPv4Masquerade: true
+
+operator:
+  enabled: true
+
+  # -- Roll out cilium-operator pods automatically when configmap is updated.
+  rollOutPods: true
+
+  # -- Number of replicas to run for the cilium-operator deployment
+  replicas: 2
