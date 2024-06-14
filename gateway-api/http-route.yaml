@@ -17,5 +17,5 @@ spec:
         type: PathPrefix
         value: /
     backendRefs:
-    - name: webapp-svc
+    - name: webapp-v1-svc
       port: 80
