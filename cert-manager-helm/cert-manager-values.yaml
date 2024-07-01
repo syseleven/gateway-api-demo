@@ -1,0 +1,57 @@
+global:
+
+installCRDs: true
+
+replicaCount: 1
+
+strategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxSurge: 0
+     maxUnavailable: 1
+
+image:
+  repository: quay.io/jetstack/cert-manager-controller
+
+serviceAccount:
+  create: true
+
+extraArgs:
+  - --enable-gateway-api
+
+# DNS Challenge / ensure that you configure a clusterissuer or change the config for Letsencrypt check https://cert-manager.io/docs/configuration/acme/
+ingressShim:
+  defaultIssuerName: "letsencrypt-prod"
+  defaultIssuerKind: "ClusterIssuer"
+
+webhook:
+  replicaCount: 1
+
+  strategy:
+     type: RollingUpdate
+     rollingUpdate:
+       maxSurge: 0
+       maxUnavailable: 1
+
+  image:
+    repository: quay.io/jetstack/cert-manager-webhook
+
+  serviceAccount:
+    create: true
+
+cainjector:
+  enabled: true
+  replicaCount: 1
+
+  strategy:
+     type: RollingUpdate
+     rollingUpdate:
+       maxSurge: 0
+       maxUnavailable: 1
+
+  image:
+    repository: quay.io/jetstack/cert-manager-cainjector
+    pullPolicy: IfNotPresent
+
+  serviceAccount:
+    create: true

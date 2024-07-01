@@ -5,17 +5,25 @@
 * Install cert-manager helm chart (optional)
 * Install external dns helm chart (optional)
 * Kubernetes or Cloud provider Load Balancer Service 
-* Install Gateway API CRDs
 
-```kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.0.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.0.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.0.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.0.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.0.0/config/crd/experimental/gateway.networking.k8s.io_grpcroutes.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.0.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+* Clone this repo
+
+```
+git clone https://github.com/syseleven/gateway-api-demo.git
 ```
 
-* Install cilium helm chart. This is the minimum configuration
+* Install Gateway API CRDs
+
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.1.0/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml
+```
+
+* Install the cilium helm chart. This is the minimum configuration. You can also use the cilium values file in this repo (optional)
 
 ```
 helm upgrade cilium cilium/cilium \
@@ -25,10 +33,20 @@ helm upgrade cilium cilium/cilium \
     --set gatewayAPI.enabled=true
 ```
 
-* You can also use the cilium values file in this repo (optional)
-* Clone this repo
-* Install the Gateway API controller. Remove the HTTPS section if you are only using HTTP routes. Change the domain, certificate and clusterissuer if you are using HTTPS. You will need a Load Balancer Service for this to succeed 
+* Install the Cert-Manager helm chart (optional). Make sure to create an issuer or a clusterissuer after the installation
 
+```
+helm upgrade --install cert-manager --namespace cert-manager --create-namespace -f cert-manager-helm/cert-manager-values.yaml jetstack/cert-manager
+```
+
+* Install the External DNS helm chart (optional). Make sure to configure your DNS API key in the external-dns-values.yaml first
+
+```
+helm upgrade --install external-dns --namespace external-dns  --create-namespace -f external-dns/external-dns-values.yaml bitnami/external-dns
+```
+ 
+* Install the Gateway API controller. Remove the HTTPS section if you are only using HTTP routes. Change the domain, certificate and clusterissuer if you are using HTTPS. You will need a Load Balancer Service for this to succeed 
+ 
 ```
 kubectl create -f gateway-api/gateway.yaml
 ```

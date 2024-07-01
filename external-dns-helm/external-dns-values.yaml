@@ -1,0 +1,67 @@
+image:
+  registry: docker.io
+  repository: bitnami/external-dns
+
+sources:
+- service
+- ingress
+- gateway-httproute
+- gateway-tlsroute
+- gateway-grpcroute
+
+# Add your AWS Route53 Api Key here. Or configure another DNS provider https://kubernetes-sigs.github.io/external-dns/#the-latest-release
+provider: aws
+
+aws:
+  credentials:
+    secretKey: ""
+    accessKey: ""
+    mountPath: "/.aws"
+
+  ## AWS region
+  region: "eu-central-1"
+
+# Limit possible target zones by domain suffixes (optional)
+domainFilters: []
+
+# Limit possible target zones by zone id (optional)
+zoneIdFilters: []
+
+# Filter sources managed by external-dns via annotation using label selector semantics (optional)
+annotationFilter: ""
+
+# Adjust the interval for DNS updates
+interval: "1m"
+
+# Registry to use for ownership (txt or noop)
+registry: "txt"
+
+# When using the TXT registry, a name that identifies this instance of ExternalDNS
+txtOwnerId: ""
+
+## Modify how DNS records are sychronized between sources and providers (options: sync, upsert-only )
+policy: sync
+
+# Verbosity of the logs (options: panic, debug, info, warning, error, fatal)
+logLevel: info
+
+## Replica count
+replicas: 1
+
+serviceAccount:
+  create: true
+
+rbac:
+  create: true
+  clusterRole: true
+  apiVersion: v1
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+podSecurityContext:
+  fsGroup: 1001
+  runAsUser: 1001
+  runAsNonRoot: true
