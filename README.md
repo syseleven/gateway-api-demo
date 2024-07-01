@@ -33,13 +33,14 @@ helm upgrade cilium cilium/cilium \
     --set gatewayAPI.enabled=true
 ```
 
-* Install the Cert-Manager helm chart (optional). Make sure to create an issuer or a clusterissuer after the installation
+* Install the Cert-Manager helm chart (optional). Make sure to create an issuer or a clusterissuer after the installation. [Cert-Manager Docs]( https://cert-manager.io/docs/configuration/acme) 
 
 ```
 helm upgrade --install cert-manager --namespace cert-manager --create-namespace -f cert-manager-helm/cert-manager-values.yaml jetstack/cert-manager
 ```
 
-* Install the External DNS helm chart (optional). Make sure to configure your DNS API key in the external-dns-values.yaml first
+* Install the External DNS helm chart (optional). Make sure to configure your DNS API key in the external-dns-values.yaml first. [External-DNS Docs](https://kubernetes-sigs.github.io/external-dns/#the-latest-release
+)
 
 ```
 helm upgrade --install external-dns --namespace external-dns  --create-namespace -f external-dns/external-dns-values.yaml bitnami/external-dns

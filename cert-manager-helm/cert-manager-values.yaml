@@ -19,7 +19,7 @@ serviceAccount:
 extraArgs:
   - --enable-gateway-api
 
-# DNS Challenge / ensure that you configure a clusterissuer or change the config for Letsencrypt check https://cert-manager.io/docs/configuration/acme/
+# DNS Challenge / ensure that you configure a clusterissuer or change the config for Letsencrypt check https://cert-manager.io/docs/configuration/acme
 ingressShim:
   defaultIssuerName: "letsencrypt-prod"
   defaultIssuerKind: "ClusterIssuer"
