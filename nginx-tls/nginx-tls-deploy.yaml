@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-tls
+  name: nginx-tls
+  namespace: nginx-tls
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-tls
+  template:
+    metadata:
+      labels:
+        app: nginx-tls
+    spec:
+      containers:
+      - name: nginx-tls
+        image: syseleven/k8s-demo:3.0.0
+        volumeMounts:
+          - name: tls-cert
+            mountPath: /etc/nginx/certs/
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTPS
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTPS
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 1
+          failureThreshold: 3
+      volumes:
+        - name: tls-cert
+          secret:
+            secretName: nginx-tls-cert
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-tls-svc
+  namespace: nginx-tls
+spec:
+  ports:
+  - port: 443
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+      app: nginx-tls

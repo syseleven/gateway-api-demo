@@ -1,0 +1,69 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: webapp
+  name: webapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webapp-v1
+  name: webapp-v1
+  namespace: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webapp-v1
+  template:
+    metadata:
+      labels:
+        app: webapp-v1
+    spec:
+      containers:
+      - name: hello
+        image: syseleven/metakube-hello:1.0.0
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 1
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-v1-svc
+  namespace: webapp
+spec:
+  clusterIP:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+      app: webapp-v1

@@ -1,0 +1,9 @@
+.idea
+.vscode
+.env
+.DS_Store
+*~
+*.swp
+*.orig
+*.tfstate.*
+*.retry
